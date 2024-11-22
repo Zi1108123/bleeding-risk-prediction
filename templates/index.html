@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bleeding Risk Prediction</title>
+    <!-- 引入 Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Bleeding Risk Prediction</h1>
+        <form action="/web-predict" method="POST" class="bg-white p-4 rounded shadow-sm">
+            <div class="mb-3">
+                <label class="form-label">Antiplatelet drug discontinuation:</label><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="feature_0" value="1" required>
+                    <label class="form-check-label">Short discontinuation</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="feature_0" value="2" required>
+                    <label class="form-check-label">Delayed discontinuation</label>
+                </div>
+            </div>
+            <!-- 其他变量的输入字段 -->
+            {% for feature in top_10_features[1:] %}
+            <div class="mb-3">
+                <label for="feature_{{ loop.index }}" class="form-label">{{ feature.Feature }}:</label>
+                <input type="text" id="feature_{{ loop.index }}" name="feature_{{ loop.index }}" class="form-control" required>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100">Predict</button>
+        </form>
+    </div>
+    <!-- 引入 Bootstrap 脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

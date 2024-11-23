@@ -1,62 +1,65 @@
-from flask import Flask, request, jsonify, render_template
-import joblib
+from flask import Flask, render_template, request
 import numpy as np
-import os
-import pandas as pd
+import joblib
 
-# 加载模型
-model_path = os.path.join(os.path.dirname(__file__), "bleeding_risk_model.pkl")
-model = joblib.load(model_path)
-
-# 定义特征列表
-selected_features = [
-    "Antiplatelet drug discontinuation", "NT ProBNP", "APTT", "TBIL", "Hb",
-    "cTnt", "eGRF", "Urea", "Fibrinogen", "INR"
-]
-
-# 初始化 Flask 应用
 app = Flask(__name__)
 
-# 向 Jinja2 模板添加 zip 函数
-app.jinja_env.globals.update(zip=zip)
+# 加载模型
+model_path = "bleeding_risk_model.pkl"
+model = joblib.load(model_path)
 
+# 定义重要性前 10 的特征
+top_10_features = [
+    "Antiplatelet Drug Discontinuation",
+    "NT ProBNP",
+    "APTT",
+    "Hb",
+    "Urea",
+    "cTnT",
+    "TBIL",
+    "eGFR",
+    "Fibrinogen",
+    "INR"
+]
+
+# 定义变量的单位
+units = {
+    "NT ProBNP": "pg/ml",
+    "APTT": "s",
+    "Hb": "g/L",
+    "Urea": "mmol/L",
+    "cTnT": "ng/mL",
+    "TBIL": "μmol/L",
+    "eGFR": "ml/min/1.73m²",
+    "Fibrinogen": "mg/dL",
+    "INR": None  # 无单位
+}
 
 @app.route('/')
-def home():
-    """主页：动态显示模型重要性前10的变量"""
-    feature_importances = model.feature_importances_
-    importance_df = pd.DataFrame({
-        "Feature": selected_features,
-        "Importance": feature_importances
-    }).sort_values(by="Importance", ascending=False)
-    top_10_features = importance_df.head(10).to_dict(orient="records")
-    return render_template('index.html', top_10_features=top_10_features)
+def index():
+    return render_template('index.html', top_10_features=top_10_features, units=units)
 
-@app.route('/web-predict', methods=['POST'])
-def web_predict():
-    """处理预测请求"""
+@app.route('/predict', methods=['POST'])
+def predict():
     try:
-        feature_importances = model.feature_importances_
-        importance_df = pd.DataFrame({
-            "Feature": selected_features,
-            "Importance": feature_importances
-        }).sort_values(by="Importance", ascending=False)
-        top_10_features = importance_df.head(10)["Feature"].tolist()
+        # 获取输入值
         features = [float(request.form[f'feature_{i}']) for i in range(10)]
         features = np.array(features).reshape(1, -1)
+
+        # 模型预测
         probability = model.predict_proba(features)[0, 1]
         prediction = model.predict(features)[0]
+
+        # 返回结果
         return render_template(
             'result.html',
             prediction=int(prediction),
-            probability=float(probability),
-            top_10_features=top_10_features,
+            probability=round(probability, 2),
             input_values=features[0].tolist()
         )
     except Exception as e:
         return render_template('error.html', error=str(e))
 
 if __name__ == '__main__':
-    # 从环境变量中获取端口，默认为 5000
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+

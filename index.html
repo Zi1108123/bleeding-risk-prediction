@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bleeding Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: gray;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .note {
+            color: gray;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bleeding Risk Prediction</h1>
+    <form action="/predict" method="post">
+        <div class="form-section">
+            <label>Antiplatelet Drug Discontinuation:</label><br>
+            <input type="radio" id="short_discontinuation" name="feature_0" value="1">
+            <label for="short_discontinuation">Short Discontinuation *</label><br>
+            <input type="radio" id="delayed_discontinuation" name="feature_0" value="2">
+            <label for="delayed_discontinuation">Delayed Discontinuation **</label><br><br>
+        </div>
+
+        {% for i, feature in enumerate(top_10_features[1:]) %}
+        <div class="form-section">
+            <label for="feature_{{ i+1 }}">{{ feature }}{% if units[feature] %} ({{ units[feature] }}){% endif %}</label><br>
+            <input type="text" id="feature_{{ i+1 }}" name="feature_{{ i+1 }}"><br><br>
+        </div>
+        {% endfor %}
+        
+        <input type="submit" value="Predict">
+    </form>
+
+    <!-- 添加说明 -->
+    <footer>
+        <h3>Variable Full Names</h3>
+        <ul>
+            <li><strong>NT proBNP:</strong> N-terminal pro-B-type natriuretic peptide</li>
+            <li><strong>APTT:</strong> Activated Partial Thromboplastin Time</li>
+            <li><strong>Hb:</strong> Hemoglobin</li>
+            <li><strong>cTnT:</strong> cardiac Troponin T</li>
+            <li><strong>TBIL:</strong> Total bilirubin</li>
+            <li><strong>eGFR:</strong> estimated glomerular filtration rate</li>
+            <li><strong>INR:</strong> International Normalized Ratio</li>
+        </ul>
+        <h3>Discontinuation Definitions</h3>
+        <ul>
+            <li><strong>* Short Discontinuation:</strong> clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
+            <li><strong>** Delayed Discontinuation:</strong> clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
+        </ul>
+    </footer>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bleeding Risk Prediction</title>
+</head>
+<body>
+    <h1>Bleeding Risk Prediction</h1>
+    <form action="/predict" method="post">
+        <!-- 示例变量输入 -->
+        {% for i, feature in enumerate(top_10_features) %}
+            <label for="feature_{{ i }}">{{ feature }}{% if units[feature] %} ({{ units[feature] }}){% endif %}</label><br>
+            <input type="text" id="feature_{{ i }}" name="feature_{{ i }}"><br><br>
+        {% endfor %}
+        <input type="submit" value="Predict">
+    </form>
+
+    <!-- 添加简称全称说明 -->
+    <footer style="margin-top: 20px; font-size: 0.9em; color: gray;">
+        <h3>Variable Full Names</h3>
+        <ul>
+            <li><strong>NT proBNP:</strong> N-terminal pro-B-type natriuretic peptide</li>
+            <li><strong>APTT:</strong> Activated Partial Thromboplastin Time</li>
+            <li><strong>Hb:</strong> Hemoglobin</li>
+            <li><strong>cTnT:</strong> cardiac Troponin T</li>
+            <li><strong>TBIL:</strong> Total bilirubin</li>
+            <li><strong>eGFR:</strong> estimated glomerular filtration rate</li>
+            <li><strong>INR:</strong> International Normalized Ratio</li>
+        </ul>
+        <h3>Discontinuation Definitions</h3>
+        <ul>
+            <li><strong>Short Discontinuation:</strong> clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
+            <li><strong>Delayed Discontinuation:</strong> clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
+        </ul>
+    </footer>
+</body>
+</html>
+

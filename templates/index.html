@@ -4,18 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .note {
+            font-size: 0.9em;
+            margin-top: 20px;
+            color: gray;
+        }
+    </style>
 </head>
 <body>
     <h1>Bleeding Risk Prediction</h1>
-    <form action="/predict" method="POST">
-        {% for feature in features_info %}
-        <div>
-            <label for="feature_{{ loop.index0 }}">{{ feature.name }} {{ feature.unit }}</label>
-            <input type="number" step="any" id="feature_{{ loop.index0 }}" name="feature_{{ loop.index0 }}" required>
+    <form method="POST" action="/">
+        <!-- 第一个变量：按钮选项 -->
+        <div class="form-group">
+            <label>Antiplatelet drug discontinuation *</label>
+            <select name="discontinuation" required>
+                <option value="Short discontinuation">Short discontinuation (*)</option>
+                <option value="Delayed discontinuation">Delayed discontinuation (**)</option>
+            </select>
+        </div>
+
+        <!-- 其余变量：输入框 -->
+        {% for feature, unit in features_info[1:] %}
+        <div class="form-group">
+            <label for="feature_{{ loop.index }}">{{ feature }} {% if unit %}({{ unit }}){% endif %}</label>
+            <input type="number" step="any" name="feature_{{ loop.index }}" required>
         </div>
         {% endfor %}
+
         <button type="submit">Predict</button>
     </form>
+
+    <div class="note">
+        * Short discontinuation: clopidogrel ≤ 3 days or ticagrelor ≤ 1 day.<br>
+        ** Delayed discontinuation: clopidogrel > 3 days, ticagrelor > 1 day, or no use of either drug.
+    </div>
 </body>
 </html>
 

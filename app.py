@@ -4,8 +4,8 @@ import numpy as np
 
 app = Flask(__name__)
 
-# 手动将 enumerate 注册为 Jinja2 的全局变量
-app.jinja_env.globals.update(enumerate=enumerate)
+# 手动将 zip 和 enumerate 注册为 Jinja2 的全局变量
+app.jinja_env.globals.update(zip=zip, enumerate=enumerate)
 
 # 加载模型
 model_path = "bleeding_risk_model.pkl"
@@ -55,7 +55,6 @@ def index():
         except Exception as e:
             return render_template("error.html", error=str(e))
     return render_template("index.html", features_info=features_info, units=units)
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

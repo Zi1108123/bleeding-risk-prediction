@@ -1,85 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .note {
-            font-size: 0.9em;
-            margin-top: 20px;
-            color: gray;
-        }
-    </style>
 </head>
 <body>
     <h1>Bleeding Risk Prediction</h1>
-    <form method="POST" action="/">
-        <!-- 第一个变量：按钮选项 -->
-        <div class="form-group">
-            <label>Antiplatelet drug discontinuation *</label>
-            <select name="discontinuation" required>
-                <option value="Short discontinuation">Short discontinuation (*)</option>
-                <option value="Delayed discontinuation">Delayed discontinuation (**)</option>
-            </select>
-        </div>
-
-        <!-- 其余变量：输入框 -->
-{% for i, feature in enumerate(features_info) %}
-    <div>
-        <label>{{ feature.name }}</label>
-        <input type="text" name="feature_{{ i }}">
-        {% if feature.unit %}
-            <span>({{ feature.unit }})</span>
-        {% endif %}
-    </div>
-{% endfor %}
-
+    <form method="POST" action="/predict">
+        {% for idx, feature in enumerate(features_info) %}
+            <label for="feature_{{ idx }}">{{ feature.name }}</label>
+            {% if feature.name == "Antiplatelet drug discontinuation" %}
+                <select id="feature_{{ idx }}" name="feature_{{ idx }}">
+                    <option value="1">Short discontinuation (*)</option>
+                    <option value="2">Delayed discontinuation (**)</option>
+                </select>
+            {% else %}
+                <input type="text" id="feature_{{ idx }}" name="feature_{{ idx }}" placeholder="Enter value">
+                <span>({{ feature.unit }})</span>
+            {% endif %}
+            <br>
+        {% endfor %}
         <button type="submit">Predict</button>
     </form>
 
-    <div class="note">
-        * Short discontinuation: clopidogrel ≤ 3 days or ticagrelor ≤ 1 day.<br>
-        ** Delayed discontinuation: clopidogrel > 3 days, ticagrelor > 1 day, or no use of either drug.
-    </div>
+    <h2>Variable Explanations:</h2>
+    <ul>
+        <li>NT ProBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
+        <li>APTT: Activated Partial Thromboplastin Time (s)</li>
+        <li>Hb: Hemoglobin (g/L)</li>
+        <li>cTnT: Cardiac Troponin T (ng/mL)</li>
+        <li>TBIL: Total Bilirubin (μmol/L)</li>
+        <li>eGFR: Estimated Glomerular Filtration Rate (ml/min/1.73m²)</li>
+        <li>INR: International Normalized Ratio (no unit)</li>
+        <li>* Short discontinuation: clopidogrel ≤ 3 days, ticagrelor ≤ 1 day</li>
+        <li>** Delayed discontinuation: clopidogrel > 3 days, ticagrelor > 1 day, or no use</li>
+    </ul>
 </body>
 </html>
 

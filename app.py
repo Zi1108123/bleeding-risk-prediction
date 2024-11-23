@@ -10,22 +10,22 @@ model_path = 'bleeding_risk_model.pkl'
 model = joblib.load(model_path)
 
 # 变量信息
-features_info = [
-    ("Antiplatelet Drug Discontinuation", "Short discontinuation*", "Delayed discontinuation**"),
-    ("NT proBNP (pg/ml)", "Numerical input", ""),
-    ("APTT (s)", "Numerical input", ""),
-    ("Hb (g/L)", "Numerical input", ""),
-    ("Urea (mmol/L)", "Numerical input", ""),
-    ("cTnT (ng/mL)", "Numerical input", ""),
-    ("TBIL (μmol/L)", "Numerical input", ""),
-    ("eGFR (ml/min/1.73m²)", "Numerical input", ""),
-    ("Fibrinogen (mg/dL)", "Numerical input", ""),
-    ("INR", "Numerical input", "")
-]
-
-
-    # 将 zip 传递给模板
+@app.route("/")
+def index():
+    features_info = [
+        ("Antiplatelet Drug Discontinuation", "Discontinuation Type (Short*/Delayed**)"),
+        ("NT proBNP", "pg/ml"),
+        ("APTT", "s"),
+        ("Hb", "g/L"),
+        ("Urea", "mmol/L"),
+        ("cTnT", "ng/mL"),
+        ("TBIL", "μmol/L"),
+        ("eGFR", "ml/min/1.73m²"),
+        ("Fibrinogen", "mg/dL"),
+        ("INR", None)
+    ]
     return render_template("index.html", top_10_features=features_info, zip=zip)
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

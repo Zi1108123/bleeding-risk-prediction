@@ -62,21 +62,16 @@
         <button type="submit">Predict</button>
     </form>
 
-    {% if prediction is not none and probability is not none %}
-    <div class="result">
-        <h2>Prediction Result:</h2>
-        <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
-        <p><strong>Risk Probability:</strong> {{ probability }}</p>
-{% if prediction is not none %}
-<div class="result-section">
+{% if prediction is not none and probability is not none %}
+<div class="result">
     <h2>Prediction Result:</h2>
     <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
     <p><strong>Risk Probability:</strong> {{ probability }}</p>
     {% if probability > 0.5 %}
     <p class="alert-danger">Consider postponing the CABG surgery</p>
     {% endif %}
-    </div>
-    {% endif %}
+</div>
+{% endif %}
 
     <div class="explanation">
         <h3>Variable Explanations:</h3>

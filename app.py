@@ -52,7 +52,7 @@ def index():
             )
         except Exception as e:
             return f"Error: {str(e)}"
-    return render_template("index.html", features_info=features_info, enumerate=enumerate
+    return render_template("index.html", features_info=features_info, enumerate=enumerate）
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

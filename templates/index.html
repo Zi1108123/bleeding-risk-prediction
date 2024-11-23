@@ -63,10 +63,10 @@
         </div>
 
         <!-- 其余变量：输入框 -->
-        {% for feature, unit in features_info[1:] %}
+        {% for i, feature in enumerate(features_info[1:], start=1) %}
         <div class="form-group">
-            <label for="feature_{{ loop.index }}">{{ feature }} {% if unit %}({{ unit }}){% endif %}</label>
-            <input type="number" step="any" name="feature_{{ loop.index }}" required>
+            <label for="feature_{{ i }}">{{ feature.name }} {% if feature.unit %}({{ feature.unit }}){% endif %}</label>
+            <input type="number" step="any" name="feature_{{ i }}" required>
         </div>
         {% endfor %}
 

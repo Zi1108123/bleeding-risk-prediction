@@ -10,16 +10,16 @@ model = joblib.load(model_path)
 
 # 定义特征名称和单位
 features_info = [
-    ("Antiplatelet drug discontinuation", ""),  # 特殊处理为按钮
-    ("NT ProBNP", "pg/ml"),
-    ("APTT", "s"),
-    ("Hb", "g/L"),
-    ("Urea", "mmol/L"),
-    ("cTnT", "ng/mL"),
-    ("TBIL", "μmol/L"),
-    ("eGFR", "ml/min/1.73m²"),
-    ("Fibrinogen", "mg/dL"),
-    ("INR", ""),  # 无单位
+    {"name": "Antiplatelet drug discontinuation", "unit": ""},  # 特殊处理为按钮
+    {"name": "NT ProBNP", "unit": "pg/ml"},
+    {"name": "APTT", "unit": "s"},
+    {"name": "Hb", "unit": "g/L"},
+    {"name": "Urea", "unit": "mmol/L"},
+    {"name": "cTnT", "unit": "ng/mL"},
+    {"name": "TBIL", "unit": "μmol/L"},
+    {"name": "eGFR", "unit": "ml/min/1.73m²"},
+    {"name": "Fibrinogen", "unit": "mg/dL"},
+    {"name": "INR", "unit": ""},  # 无单位
 ]
 
 @app.route("/", methods=["GET", "POST"])
@@ -34,7 +34,6 @@ def index():
 
             # 收集其余数值型变量
             for i in range(1, len(features_info)):
-                feature_name, _ = features_info[i]
                 value = float(request.form[f"feature_{i}"])
                 features.append(value)
 
@@ -53,6 +52,7 @@ def index():
         except Exception as e:
             return render_template("error.html", error=str(e))
 
+    # 将特征名称和单位信息直接传递到模板
     return render_template("index.html", features_info=features_info)
 
 if __name__ == '__main__':

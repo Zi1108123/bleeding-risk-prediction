@@ -1,39 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, button {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .result, .error {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+        .result h2, .error h2 {
+            margin-top: 0;
+        }
+        .explanation {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
     <h1>Bleeding Risk Prediction</h1>
-    <form method="POST" action="/predict">
-        {% for idx, feature in enumerate(features_info) %}
-            <label for="feature_{{ idx }}">{{ feature.name }}</label>
-            {% if feature.name == "Antiplatelet drug discontinuation" %}
-                <select id="feature_{{ idx }}" name="feature_{{ idx }}">
-                    <option value="1">Short discontinuation (*)</option>
-                    <option value="2">Delayed discontinuation (**)</option>
-                </select>
+    <form method="POST">
+        <!-- 遍历特征信息 -->
+        {% for i, (feature, unit) in enumerate(zip(features_info, units)) %}
+        <div>
+            <label for="feature_{{ i }}">{{ feature }} {{ unit }}</label>
+            {% if i == 0 %}
+            <!-- 第一个变量的选项 -->
+            <select id="feature_{{ i }}" name="feature_{{ i }}">
+                <option value="1">Short discontinuation (*)</option>
+                <option value="2">Delayed discontinuation (**)</option>
+            </select>
             {% else %}
-                <input type="text" id="feature_{{ idx }}" name="feature_{{ idx }}" placeholder="Enter value">
-                <span>({{ feature.unit }})</span>
+            <input type="text" id="feature_{{ i }}" name="feature_{{ i }}" placeholder="{{ unit }}">
             {% endif %}
-            <br>
+        </div>
         {% endfor %}
         <button type="submit">Predict</button>
     </form>
 
-    <h2>Variable Explanations:</h2>
-    <ul>
-        <li>NT ProBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
-        <li>APTT: Activated Partial Thromboplastin Time (s)</li>
-        <li>Hb: Hemoglobin (g/L)</li>
-        <li>cTnT: Cardiac Troponin T (ng/mL)</li>
-        <li>TBIL: Total Bilirubin (μmol/L)</li>
-        <li>eGFR: Estimated Glomerular Filtration Rate (ml/min/1.73m²)</li>
-        <li>INR: International Normalized Ratio (no unit)</li>
-        <li>* Short discontinuation: clopidogrel ≤ 3 days, ticagrelor ≤ 1 day</li>
-        <li>** Delayed discontinuation: clopidogrel > 3 days, ticagrelor > 1 day, or no use</li>
-    </ul>
+    {% if prediction is not none and probability is not none %}
+    <div class="result">
+        <h2>Prediction Result:</h2>
+        <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
+        <p><strong>Risk Probability:</strong> {{ probability }}</p>
+    </div>
+    {% endif %}
+
+    <div class="explanation">
+        <h3>Variable Explanations:</h3>
+        <ul>
+            <li>NT ProBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
+            <li>APTT: Activated Partial Thromboplastin Time (s)</li>
+            <li>Hb: Hemoglobin (g/L)</li>
+            <li>cTnT: cardiac Troponin T (ng/mL)</li>
+            <li>TBIL: Total bilirubin (μmol/L)</li>
+            <li>eGFR: estimated glomerular filtration rate (ml/min/1.73m²)</li>
+            <li>Fibrinogen: (mg/dL)</li>
+            <li>INR: International Normalized Ratio (no unit)</li>
+            <li>* Short discontinuation: clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
+            <li>** Delayed discontinuation: clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
+        </ul>
+    </div>
 </body>
 </html>
 

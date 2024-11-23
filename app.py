@@ -30,10 +30,9 @@ units = ["(Short or Delayed)", "pg/ml", "s", "g/L", "mmol/L", "ng/mL", "μmol/L"
 def index():
     if request.method == "POST":
         try:
-            # 获取输入值
             inputs = []
             for i in range(len(features_info)):
-                if i == 0:  # 对于第一个变量，处理为选项值
+                if i == 0:
                     value = int(request.form.get(f"feature_{i}"))
                 else:
                     value = float(request.form.get(f"feature_{i}"))
@@ -52,6 +51,24 @@ def index():
                 prediction=prediction,
                 probability=round(probability, 3),
             )
+        except Exception as e:
+            # 如果出现错误，也需要传递 prediction 和 probability 为 None
+            return render_template(
+                "index.html",
+                features_info=features_info,
+                units=units,
+                prediction=None,
+                probability=None,
+                error=str(e),
+            )
+    # 初始 GET 请求时传递空值
+    return render_template(
+        "index.html",
+        features_info=features_info,
+        units=units,
+        prediction=None,
+        probability=None,
+    )
         except Exception as e:
             return render_template("error.html", error=str(e))
     return render_template("index.html", features_info=features_info, units=units)

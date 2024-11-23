@@ -1,65 +1,49 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template
 import numpy as np
 import joblib
 
+# Load the model
 app = Flask(__name__)
-
-# 加载模型
 model_path = "bleeding_risk_model.pkl"
 model = joblib.load(model_path)
 
-# 定义重要性前 10 的特征
-top_10_features = [
-    "Antiplatelet Drug Discontinuation",
-    "NT ProBNP",
-    "APTT",
-    "Hb",
-    "Urea",
-    "cTnT",
-    "TBIL",
-    "eGFR",
-    "Fibrinogen",
-    "INR"
+# Feature metadata
+features_info = [
+    {"name": "Antiplatelet Drug Discontinuation", "unit": ""},
+    {"name": "NT proBNP", "unit": "pg/ml"},
+    {"name": "APTT", "unit": "s"},
+    {"name": "Hb", "unit": "g/L"},
+    {"name": "Urea", "unit": "mmol/L"},
+    {"name": "cTnT", "unit": "ng/mL"},
+    {"name": "TBIL", "unit": "μmol/L"},
+    {"name": "eGFR", "unit": "ml/min/1.73m²"},
+    {"name": "Fibrinogen", "unit": "mg/dL"},
+    {"name": "INR", "unit": ""}
 ]
 
-# 定义变量的单位
-units = {
-    "NT ProBNP": "pg/ml",
-    "APTT": "s",
-    "Hb": "g/L",
-    "Urea": "mmol/L",
-    "cTnT": "ng/mL",
-    "TBIL": "μmol/L",
-    "eGFR": "ml/min/1.73m²",
-    "Fibrinogen": "mg/dL",
-    "INR": None  # 无单位
-}
-
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html', top_10_features=top_10_features, units=units)
+    return render_template("index.html", top_10_features=features_info)
 
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # 获取输入值
-        features = [float(request.form[f'feature_{i}']) for i in range(10)]
+        # Get inputs
+        features = [float(request.form[f"feature_{i}"]) for i in range(10)]
         features = np.array(features).reshape(1, -1)
 
-        # 模型预测
+        # Predict
         probability = model.predict_proba(features)[0, 1]
         prediction = model.predict(features)[0]
 
-        # 返回结果
+        # Render result
         return render_template(
-            'result.html',
+            "result.html",
             prediction=int(prediction),
-            probability=round(probability, 2),
-            input_values=features[0].tolist()
+            probability=float(probability)
         )
     except Exception as e:
-        return render_template('error.html', error=str(e))
+        return render_template("error.html", error=str(e))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-

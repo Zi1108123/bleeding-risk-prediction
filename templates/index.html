@@ -4,36 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
-    <!-- 引入 Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .tooltip {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 12px;
+            color: blue;
+            cursor: pointer;
+        }
+        .tooltip:hover:after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 12px;
+            color: #333;
+            white-space: nowrap;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <h1 class="text-center mb-4">Bleeding Risk Prediction</h1>
-        <form action="/web-predict" method="POST" class="bg-white p-4 rounded shadow-sm">
-            <div class="mb-3">
-                <label class="form-label">Antiplatelet drug discontinuation:</label><br>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="feature_0" value="1" required>
-                    <label class="form-check-label">Short discontinuation</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="feature_0" value="2" required>
-                    <label class="form-check-label">Delayed discontinuation</label>
-                </div>
-            </div>
-            <!-- 其他变量的输入字段 -->
-            {% for feature in top_10_features[1:] %}
-            <div class="mb-3">
-                <label for="feature_{{ loop.index }}" class="form-label">{{ feature.Feature }}:</label>
-                <input type="text" id="feature_{{ loop.index }}" name="feature_{{ loop.index }}" class="form-control" required>
-            </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary w-100">Predict</button>
-        </form>
+<body>
+    <h1>Bleeding Risk Prediction</h1>
+    <form method="POST" action="/predict">
+        <!-- Variable 1 -->
+        <div class="form-group">
+            <label for="feature_0">Antiplatelet Drug Discontinuation
+                <span class="tooltip" data-tooltip="Short: clopidogrel ≤ 3 days, ticagrelor ≤ 1 day">?</span>
+            </label>
+            <select name="feature_0" id="feature_0">
+                <option value="1">Short Discontinuation</option>
+                <option value="2">Delayed Discontinuation</option>
+            </select>
+        </div>
+        <!-- Remaining Variables -->
+        {% for i, feature in enumerate(top_10_features[1:], start=1) %}
+        <div class="form-group">
+            <label for="feature_{{ i }}">{{ feature.name }} ({{ feature.unit }})</label>
+            <input type="number" step="any" name="feature_{{ i }}" id="feature_{{ i }}" required>
+        </div>
+        {% endfor %}
+        <button type="submit">Predict</button>
+    </form>
+    <div class="note">
+        <strong>Variable Full Names:</strong>
+        <ul>
+            <li>NT proBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
+            <li>APTT: Activated Partial Thromboplastin Time (s)</li>
+            <li>Hb: Hemoglobin (g/L)</li>
+            <li>cTnT: Cardiac Troponin T (ng/mL)</li>
+            <li>TBIL: Total Bilirubin (μmol/L)</li>
+            <li>eGFR: Estimated Glomerular Filtration Rate (ml/min/1.73m²)</li>
+            <li>Fibrinogen (mg/dL)</li>
+            <li>INR: International Normalized Ratio</li>
+        </ul>
     </div>
-    <!-- 引入 Bootstrap 脚本 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

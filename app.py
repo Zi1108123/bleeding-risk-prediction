@@ -69,10 +69,6 @@ def index():
         prediction=None,
         probability=None,
     )
-    except Exception as e:
-        return render_template("error.html", error=str(e))
-    return render_template("index.html", features_info=features_info, units=units)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-

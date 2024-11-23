@@ -4,92 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-        .form-group small {
-            font-size: 12px;
-            color: gray;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .explanations {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #555;
-        }
-        .explanations ul {
-            padding-left: 20px;
-        }
-        .explanations ul li {
-            margin-bottom: 8px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bleeding Risk Prediction</h1>
-        <form method="POST" action="/predict">
-            <div class="form-group">
-                <label>Antiplatelet Drug Discontinuation *</label>
-                <select name="feature_0" required>
-                    <option value="1">Short discontinuation <sup>*</sup></option>
-                    <option value="2">Delayed discontinuation <sup>**</sup></option>
-                </select>
-            </div>
-            {% for feature, unit in zip(top_10_features, units) %}
-            <div class="form-group">
-                <label>{{ feature }} {{ unit }}</label>
-                <input type="text" step="any" name="feature_{{ loop.index }}" required>
-            </div>
-            {% endfor %}
-            <button type="submit">Predict</button>
-        </form>
-        <div class="explanations">
-            <h2>Variable Explanations:</h2>
-            <ul>
-                <li>NT proBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
-                <li>APTT: Activated Partial Thromboplastin Time (s)</li>
-                <li>Hb: Hemoglobin (g/L)</li>
-                <li>cTnT: cardiac Troponin T (ng/mL)</li>
-                <li>TBIL: Total bilirubin (μmol/L)</li>
-                <li>eGFR: estimated glomerular filtration rate (ml/min/1.73m²)</li>
-                <li>Fibrinogen: (mg/dL)</li>
-                <li>INR: International Normalized Ratio (no unit)</li>
-                <li><sup>*</sup> Short discontinuation: clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
-                <li><sup>**</sup> Delayed discontinuation: clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
-            </ul>
+    <h1>Bleeding Risk Prediction</h1>
+    <form action="/predict" method="POST">
+        {% for feature in features_info %}
+        <div>
+            <label for="feature_{{ loop.index0 }}">{{ feature.name }} {{ feature.unit }}</label>
+            <input type="number" step="any" id="feature_{{ loop.index0 }}" name="feature_{{ loop.index0 }}" required>
         </div>
-    </div>
+        {% endfor %}
+        <button type="submit">Predict</button>
+    </form>
 </body>
 </html>
 

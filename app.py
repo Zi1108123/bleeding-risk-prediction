@@ -21,9 +21,10 @@ features_info = [
     {"name": "INR", "unit": ""}
 ]
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html", top_10_features=features_info)
+    return render_template("index.html", top_10_features=features_info, enumerate=enumerate)
+
 
 @app.route("/predict", methods=["POST"])
 def predict():

@@ -4,44 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bleeding Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .note {
+            font-size: 0.9rem;
+            color: gray;
+        }
+        .variable-explanations {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .variable-explanations ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .variable-explanations li {
+            margin-bottom: 8px;
+        }
+        .sup {
+            font-size: 0.7rem;
+            vertical-align: super;
+        }
+    </style>
 </head>
 <body>
     <h1>Bleeding Risk Prediction</h1>
     <form action="/predict" method="POST">
-        {% for i, feature in enumerate(top_10_features) %}
-            <div>
-                <label for="feature_{{ i }}">{{ feature['name'] }} ({{ feature['unit'] }})</label>
-                {% if feature['name'] == "Antiplatelet drug discontinuation" %}
-                    <div>
-                        <input type="radio" id="short" name="feature_{{ i }}" value="1" required>
-                        <label for="short">Short discontinuation</label>
-                        <sup>*</sup><br>
-                        <input type="radio" id="delayed" name="feature_{{ i }}" value="2" required>
-                        <label for="delayed">Delayed discontinuation</label>
-                        <sup>**</sup>
-                    </div>
-                {% else %}
-                    <input type="number" id="feature_{{ i }}" name="feature_{{ i }}" step="any" required>
-                {% endif %}
-            </div>
-        {% endfor %}
+        <div>
+            <label>Antiplatelet Drug Discontinuation</label>
+            <input type="radio" id="short" name="feature_0" value="1" required>
+            <label for="short">Short discontinuation <span class="sup">*</span></label><br>
+            <input type="radio" id="delayed" name="feature_0" value="2" required>
+            <label for="delayed">Delayed discontinuation <span class="sup">**</span></label>
+        </div>
+        <div>
+            <label for="feature_1">NT proBNP (pg/ml)</label>
+            <input type="number" id="feature_1" name="feature_1" step="any" required>
+        </div>
+        <div>
+            <label for="feature_2">APTT (s)</label>
+            <input type="number" id="feature_2" name="feature_2" step="any" required>
+        </div>
+        <div>
+            <label for="feature_3">Hb (g/L)</label>
+            <input type="number" id="feature_3" name="feature_3" step="any" required>
+        </div>
+        <div>
+            <label for="feature_4">Urea (mmol/L)</label>
+            <input type="number" id="feature_4" name="feature_4" step="any" required>
+        </div>
+        <div>
+            <label for="feature_5">cTnT (ng/mL)</label>
+            <input type="number" id="feature_5" name="feature_5" step="any" required>
+        </div>
+        <div>
+            <label for="feature_6">TBIL (μmol/L)</label>
+            <input type="number" id="feature_6" name="feature_6" step="any" required>
+        </div>
+        <div>
+            <label for="feature_7">eGFR (ml/min/1.73m²)</label>
+            <input type="number" id="feature_7" name="feature_7" step="any" required>
+        </div>
+        <div>
+            <label for="feature_8">Fibrinogen (mg/dL)</label>
+            <input type="number" id="feature_8" name="feature_8" step="any" required>
+        </div>
+        <div>
+            <label for="feature_9">INR</label>
+            <input type="number" id="feature_9" name="feature_9" step="any" required>
+        </div>
         <button type="submit">Predict</button>
     </form>
 
-    <hr>
-    <h2>Variable Explanations:</h2>
-    <ul>
-        <li>NT proBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
-        <li>APTT: Activated Partial Thromboplastin Time (s)</li>
-        <li>Hb: Hemoglobin (g/L)</li>
-        <li>cTnt: cardiac Troponin T (ng/mL)</li>
-        <li>TBIL: Total bilirubin (μmol/L)</li>
-        <li>eGFR: estimated glomerular filtration rate (ml/min/1.73m²)</li>
-        <li>Fibrinogen: (mg/dL)</li>
-        <li>INR: International Normalized Ratio (no unit)</li>
-        <li><sup>*</sup> Short discontinuation: clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 days</li>
-        <li><sup>**</sup> Delayed discontinuation: clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time >1 days, or no use of clopidogrel and ticagrelor</li>
-    </ul>
+    <div class="variable-explanations">
+        <strong>Variable Explanations:</strong>
+        <ul>
+            <li>NT proBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
+            <li>APTT: Activated Partial Thromboplastin Time (s)</li>
+            <li>Hb: Hemoglobin (g/L)</li>
+            <li>cTnT: cardiac Troponin T (ng/mL)</li>
+            <li>TBIL: Total bilirubin (μmol/L)</li>
+            <li>eGFR: estimated glomerular filtration rate (ml/min/1.73m²)</li>
+            <li>Fibrinogen: (mg/dL)</li>
+            <li>INR: International Normalized Ratio (no unit)</li>
+            <li><span class="sup">*</span> Short discontinuation: clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
+            <li><span class="sup">**</span> Delayed discontinuation: clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time >1 day, or no use of clopidogrel and ticagrelor</li>
+        </ul>
+    </div>
 </body>
 </html>
 

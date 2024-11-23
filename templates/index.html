@@ -63,12 +63,15 @@
         </div>
 
         <!-- 其余变量：输入框 -->
-        {% for i, feature in enumerate(features_info[1:], start=1) %}
-        <div class="form-group">
-            <label for="feature_{{ i }}">{{ feature.name }} {% if feature.unit %}({{ feature.unit }}){% endif %}</label>
-            <input type="number" step="any" name="feature_{{ i }}" required>
-        </div>
-        {% endfor %}
+{% for i, feature in enumerate(features_info) %}
+    <div>
+        <label>{{ feature.name }}</label>
+        <input type="text" name="feature_{{ i }}">
+        {% if feature.unit %}
+            <span>({{ feature.unit }})</span>
+        {% endif %}
+    </div>
+{% endfor %}
 
         <button type="submit">Predict</button>
     </form>

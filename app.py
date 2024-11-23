@@ -8,57 +8,51 @@ app = Flask(__name__)
 model_path = "bleeding_risk_model.pkl"
 model = joblib.load(model_path)
 
-# 顶部10个特征信息
+# 特征信息
 features_info = [
-    "Antiplatelet drug discontinuation",
-    "NT ProBNP",
-    "APTT",
-    "TBIL",
-    "Hb",
-    "cTnT",
-    "eGFR",
-    "Urea",
-    "Fibrinogen",
-    "INR"
-]
-units = [
-    "",
-    "pg/ml",
-    "s",
-    "μmol/L",
-    "g/L",
-    "ng/mL",
-    "ml/min/1.73m²",
-    "mmol/L",
-    "mg/dL",
-    ""
+    {"name": "Antiplatelet drug discontinuation", "unit": None},
+    {"name": "NT ProBNP", "unit": "pg/ml"},
+    {"name": "APTT", "unit": "s"},
+    {"name": "Hb", "unit": "g/L"},
+    {"name": "Urea", "unit": "mmol/L"},
+    {"name": "cTnT", "unit": "ng/mL"},
+    {"name": "TBIL", "unit": "μmol/L"},
+    {"name": "eGFR", "unit": "ml/min/1.73m²"},
+    {"name": "Fibrinogen", "unit": "mg/dL"},
+    {"name": "INR", "unit": None}
 ]
 
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html", features_info=features_info, units=units)
+    if request.method == "POST":
+        try:
+            # 收集用户输入数据
+            discontinuation = request.form.get("discontinuation")
+            feature_values = [
+                1 if discontinuation == "Short discontinuation" else 2
+            ]
+            for i in range(1, len(features_info)):
+                feature_values.append(float(request.form[f"feature_{i}"]))
 
-@app.route('/predict', methods=["POST"])
-def predict():
-    try:
-        # 获取输入数据
-        input_values = request.form.to_dict(flat=False)
-        input_values = [float(input_values[f"feature_{i}"][0]) for i in range(10)]
+            # 转为 NumPy 数组
+            feature_array = np.array(feature_values).reshape(1, -1)
 
-        # 预测
-        prediction = model.predict(np.array(input_values).reshape(1, -1))[0]
-        probability = model.predict_proba(np.array(input_values).reshape(1, -1))[0, 1]
+            # 预测
+            probability = model.predict_proba(feature_array)[0, 1]
+            prediction = model.predict(feature_array)[0]
 
-        return render_template(
-            "result.html",
-            prediction=prediction,
-            probability=round(probability * 100, 2),
-            features=features_info,
-            input_values=input_values
-        )
-    except Exception as e:
-        return render_template("error.html", error=str(e))
-
+            # 返回预测结果
+            return render_template(
+                "index.html",
+                features_info=features_info,
+                prediction=prediction,
+                probability=probability,
+                input_values=feature_values,
+                enumerate=enumerate
+            )
+        except Exception as e:
+            return f"Error: {str(e)}"
+    return render_template("index.html", features_info=features_info, enumerate=enumerate
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

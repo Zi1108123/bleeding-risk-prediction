@@ -53,7 +53,7 @@ def index():
             return render_template("error.html", error=str(e))
 
     # 将特征名称和单位信息直接传递到模板
-    return render_template("index.html", features_info=features_info)
+    return render_template("index.html", features_info=features_info, enumerate=enumerate)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

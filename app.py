@@ -1,36 +1,48 @@
 from flask import Flask, render_template, request
-import numpy as np
 import joblib
+import numpy as np
 
+# 初始化 Flask 应用
 app = Flask(__name__)
 
-# 模型加载
-model_path = "bleeding_risk_model.pkl"
+# 加载模型
+model_path = 'bleeding_risk_model.pkl'
 model = joblib.load(model_path)
 
-# 特征信息
+# 变量信息
 features_info = [
-    {"name": "Antiplatelet Drug Discontinuation", "unit": "", "options": ["Short discontinuation", "Delayed discontinuation"]},
-    {"name": "NT proBNP", "unit": "pg/ml"},
-    {"name": "APTT", "unit": "s"},
-    {"name": "Hb", "unit": "g/L"},
-    {"name": "Urea", "unit": "mmol/L"},
-    {"name": "cTnT", "unit": "ng/mL"},
-    {"name": "TBIL", "unit": "μmol/L"},
-    {"name": "eGFR", "unit": "ml/min/1.73m²"},
-    {"name": "Fibrinogen", "unit": "mg/dL"},
-    {"name": "INR", "unit": ""},
+    ("Antiplatelet Drug Discontinuation", "Short discontinuation*", "Delayed discontinuation**"),
+    ("NT proBNP (pg/ml)", "Numerical input", ""),
+    ("APTT (s)", "Numerical input", ""),
+    ("Hb (g/L)", "Numerical input", ""),
+    ("Urea (mmol/L)", "Numerical input", ""),
+    ("cTnT (ng/mL)", "Numerical input", ""),
+    ("TBIL (μmol/L)", "Numerical input", ""),
+    ("eGFR (ml/min/1.73m²)", "Numerical input", ""),
+    ("Fibrinogen (mg/dL)", "Numerical input", ""),
+    ("INR", "Numerical input", "")
 ]
 
-@app.route("/", methods=["GET"])
+@app.route('/')
 def index():
+    # 将 zip 传递给模板
     return render_template("index.html", top_10_features=features_info, zip=zip)
 
-@app.route("/predict", methods=["POST"])
+@app.route('/predict', methods=['POST'])
 def predict():
     try:
         # 从表单中获取数据
-        features = [float(request.form[f'feature_{i}']) for i in range(10)]
+        features = []
+        for feature_info in features_info:
+            feature_value = request.form.get(feature_info[0])
+            if feature_info[0] == "Antiplatelet Drug Discontinuation":
+                # 特殊处理选择框的值
+                if feature_value == "Short discontinuation":
+                    features.append(1)
+                elif feature_value == "Delayed discontinuation":
+                    features.append(2)
+            else:
+                features.append(float(feature_value))
         features = np.array(features).reshape(1, -1)
 
         # 执行预测
@@ -41,9 +53,7 @@ def predict():
         return render_template(
             'result.html',
             prediction=int(prediction),
-            probability=float(probability),
-            top_10_features=features_info,
-            input_values=features[0].tolist()
+            probability=float(probability)
         )
     except Exception as e:
         return render_template('error.html', error=str(e))

@@ -12,18 +12,18 @@ model = joblib.load(model_path)
 # 变量信息
 @app.route("/")
 def index():
-    features_info = [
-        ("Antiplatelet Drug Discontinuation", "Discontinuation Type (Short*/Delayed**)"),
-        ("NT proBNP", "pg/ml"),
-        ("APTT", "s"),
-        ("Hb", "g/L"),
-        ("Urea", "mmol/L"),
-        ("cTnT", "ng/mL"),
-        ("TBIL", "μmol/L"),
-        ("eGFR", "ml/min/1.73m²"),
-        ("Fibrinogen", "mg/dL"),
-        ("INR", None)
-    ]
+   features_info = [
+    ("Antiplatelet Drug Discontinuation", "", ""),
+    ("NT proBNP", "pg/ml", "N-terminal pro-B-type natriuretic peptide"),
+    ("APTT", "s", "Activated Partial Thromboplastin Time"),
+    ("Hb", "g/L", "Hemoglobin"),
+    ("Urea", "mmol/L", ""),
+    ("cTnT", "ng/mL", "cardiac Troponin T"),
+    ("TBIL", "μmol/L", "Total bilirubin"),
+    ("eGFR", "ml/min/1.73m²", "estimated glomerular filtration rate"),
+    ("Fibrinogen", "mg/dL", ""),
+    ("INR", "", "International Normalized Ratio"),
+]
     return render_template("index.html", top_10_features=features_info, zip=zip)
 
 

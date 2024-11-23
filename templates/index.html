@@ -7,74 +7,108 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 2% 5%;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
         }
-        .form-section {
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
             margin-bottom: 20px;
         }
+        .form-group {
+            margin-bottom: 15px;
+        }
         label {
-            display: block;
             font-weight: bold;
+            display: block;
             margin-bottom: 5px;
         }
         input, select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             border-radius: 4px;
         }
         button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
-        .variable-explanations {
+        .explanations {
             margin-top: 20px;
-            font-size: 0.9em;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #007BFF;
+        }
+        .explanations h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .explanations ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .explanations ul li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .explanations ul li span {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Bleeding Risk Prediction</h1>
-    <form action="/predict" method="POST">
-        {% for feature, option1, option2 in top_10_features %}
-        <div class="form-section">
-            <label for="{{ feature }}">{{ feature }}</label>
-            {% if option1 == "Short discontinuation*" %}
-                <select name="{{ feature }}" id="{{ feature }}" required>
-                    <option value="" disabled selected>Select one</option>
-                    <option value="Short discontinuation">Short discontinuation</option>
-                    <option value="Delayed discontinuation">Delayed discontinuation</option>
-                </select>
-            {% else %}
-                <input type="number" step="any" name="{{ feature }}" id="{{ feature }}" required>
-            {% endif %}
+    <div class="container">
+        <h1>Bleeding Risk Prediction</h1>
+        <form method="POST" action="/predict">
+            {% for feature, unit, description in top_10_features %}
+            <div class="form-group">
+                <label>{{ feature }} {% if unit %}({{ unit }}){% endif %}</label>
+                {% if feature == "Antiplatelet Drug Discontinuation" %}
+                    <select name="feature_0">
+                        <option value="1">Short discontinuation *</option>
+                        <option value="2">Delayed discontinuation **</option>
+                    </select>
+                {% else %}
+                    <input type="number" name="feature_{{ loop.index0 }}" placeholder="{{ unit }}">
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit">Predict</button>
+        </form>
+        <div class="explanations">
+            <h2>Variable Explanations:</h2>
+            <ul>
+                <li><span>NT proBNP:</span> N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
+                <li><span>APTT:</span> Activated Partial Thromboplastin Time (s)</li>
+                <li><span>Hb:</span> Hemoglobin (g/L)</li>
+                <li><span>cTnT:</span> cardiac Troponin T (ng/mL)</li>
+                <li><span>TBIL:</span> Total bilirubin (μmol/L)</li>
+                <li><span>eGFR:</span> estimated glomerular filtration rate (ml/min/1.73m²)</li>
+                <li><span>Fibrinogen:</span> (mg/dL)</li>
+                <li><span>INR:</span> International Normalized Ratio (no unit)</li>
+                <li><span>* Short discontinuation:</span> clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
+                <li><span>** Delayed discontinuation:</span> clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
+            </ul>
         </div>
-        {% endfor %}
-        <button type="submit">Predict</button>
-    </form>
-
-    <div class="variable-explanations">
-        <h3>Variable Explanations:</h3>
-        <ul>
-            <li>NT proBNP: N-terminal pro-B-type natriuretic peptide (pg/ml)</li>
-            <li>APTT: Activated Partial Thromboplastin Time (s)</li>
-            <li>Hb: Hemoglobin (g/L)</li>
-            <li>cTnT: cardiac Troponin T (ng/mL)</li>
-            <li>TBIL: Total bilirubin (μmol/L)</li>
-            <li>eGFR: estimated glomerular filtration rate (ml/min/1.73m²)</li>
-            <li>Fibrinogen: (mg/dL)</li>
-            <li>INR: International Normalized Ratio (no unit)</li>
-            <li>* Short discontinuation: clopidogrel discontinuation time ≤ 3 days or ticagrelor discontinuation time ≤ 1 day</li>
-            <li>** Delayed discontinuation: clopidogrel discontinuation time > 3 days, ticagrelor discontinuation time > 1 day, or no use of clopidogrel and ticagrelor</li>
-        </ul>
     </div>
 </body>
 </html>

@@ -23,8 +23,7 @@ features_info = [
     ("INR", "Numerical input", "")
 ]
 
-@app.route('/')
-def index():
+
     # 将 zip 传递给模板
     return render_template("index.html", top_10_features=features_info, zip=zip)
 

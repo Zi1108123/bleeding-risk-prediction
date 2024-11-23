@@ -42,7 +42,7 @@
     </style>
 </head>
 <body>
-    <h1>Bleeding Risk Prediction</h1>
+<h1 class="text-center my-4">Peri-CABG bleeding risk prediction</h1>
     <form method="POST">
         <!-- 遍历特征信息 -->
         {% for i, (feature, unit) in enumerate(zip(features_info, units)) %}
@@ -67,6 +67,14 @@
         <h2>Prediction Result:</h2>
         <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
         <p><strong>Risk Probability:</strong> {{ probability }}</p>
+{% if prediction is not none %}
+<div class="result-section">
+    <h2>Prediction Result:</h2>
+    <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
+    <p><strong>Risk Probability:</strong> {{ probability }}</p>
+    {% if probability > 0.5 %}
+    <p class="alert-danger">Consider postponing the CABG surgery</p>
+    {% endif %}
     </div>
     {% endif %}
 

@@ -11,20 +11,20 @@ app.jinja_env.globals.update(zip=zip, enumerate=enumerate)
 model_path = "bleeding_risk_model.pkl"
 model = joblib.load(model_path)
 
-# 特征信息和单位
+# 特征信息和单位 - 必须与训练模型时的顺序完全一致
 features_info = [
     "Antiplatelet drug discontinuation *",
     "NT ProBNP",
     "APTT",
-    "Hb",
-    "Urea",
-    "cTnT",
     "TBIL",
+    "Hb",
+    "cTnT",
     "eGFR",
+    "Urea",
     "Fibrinogen",
     "INR",
 ]
-units = ["(Short or Delayed)", "pg/ml", "s", "g/L", "mmol/L", "ng/mL", "μmol/L", "ml/min/1.73m²", "mg/dL", ""]
+units = ["(Short or Delayed)", "pg/ml", "s", "μmol/L", "g/L", "ng/mL", "ml/min/1.73m²", "mmol/L", "mg/dL", ""]
 
 @app.route("/", methods=["GET", "POST"])
 def index():

@@ -65,7 +65,6 @@
 {% if prediction is not none and probability is not none %}
 <div class="result">
     <h2>Prediction Result:</h2>
-    <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
     <p><strong>Risk Probability:</strong> {{ probability }}</p>
     {% if probability < 0.1 %}
     <p style="color: green; font-weight: bold;">✓ Standard management</p>

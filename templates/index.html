@@ -67,8 +67,12 @@
     <h2>Prediction Result:</h2>
     <p><strong>Risk Prediction:</strong> {{ prediction }}</p>
     <p><strong>Risk Probability:</strong> {{ probability }}</p>
-    {% if probability > 0.5 %}
-    <p class="alert-danger">Consider postponing the CABG surgery</p>
+    {% if probability < 0.1 %}
+    <p style="color: green; font-weight: bold;">✓ Standard management</p>
+    {% elif probability >= 0.1 and probability < 0.2 %}
+    <p style="color: orange; font-weight: bold;">⚠ Enhanced monitoring and optimization</p>
+    {% elif probability >= 0.2 %}
+    <p style="color: red; font-weight: bold;">⚠ Surgical delay consideration or intensive protocols</p>
     {% endif %}
 </div>
 {% else %}
